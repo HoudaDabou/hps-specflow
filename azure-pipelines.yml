@@ -36,7 +36,7 @@ steps:
 - script: |
    echo "#! /bin/bash" > $(Pipeline.Workspace)/hiptest-publisher
    echo "docker run --rm --volume=\"$(pwd):/app\" hiptest/hiptest-publisher  \"\$@\"" >> $(Pipeline.Workspace)/hiptest-publisher
-   icacls "$(Pipeline.Workspace)/hiptest-publisher" /grant:r "Domain\Users":(OI)(CI)M /T /C 
+   csc $(Pipeline.Workspace)/hiptest-publisher
   displayName: 'hiptest-publisher  docker image'
 - script: $(Pipeline.Workspace)/hiptest-publisher -c specflow.conf --token=$(project_token) --only=features,step_definitions
   displayName: 'Update the tests'
