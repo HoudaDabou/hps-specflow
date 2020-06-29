@@ -37,15 +37,13 @@ steps:
    echo "#! /bin/bash" > $(Pipeline.Workspace)/hiptest-publisher
    echo "docker run --rm --volume=\"$(pwd):/app\" hiptest/hiptest-publisher  \"\$@\"" >> $(Pipeline.Workspace)/hiptest-publisher
    sudo chmod +x $(Pipeline.Workspace)/hiptest-publisher
-  displayName: 'hiptest-publisher docker image'
-- script: $(Pipeline.Workspace)/hiptest-publisher -c specflow.conf --token=$(project_token) --only=features,step_definitions
-  displayName: 'Update the tests'
-- script: $(Pipeline.Workspace)/hiptest-publisher -c specflow.conf --token=$(project_token) --test-run-id=$(test_run_id) --without=actionwords
+  displayName: 'install hiptest-publisher though its docker image'
+- script: $(Pipeline.Workspace)/hiptest-publisher -c specflow.conf --token=$(project_token) --test-run-id=$(test_run_id) --only=features
   displayName: 'Regenerate features and fetch UIDs in each scenario included in the test run'
 - script: |
     msbuild /t:BuildNUnitFiles
     msbuild
     msbuild /t:Test
   displayName: 'Run tests'
-- script: $(Pipeline.Workspace)/hiptest-publisher -c specflow.conf --token=$(project_token) -p "target/cuke-results.json" --test-run-id=$(test_run_id)
-  displayName: 'Push the test results file to HipTest'
+- script: $(Pipeline.Workspace)/hiptest-publisher -c specflow.conf --token=$(project_token) -p "$(Pipeline.Workspace)/target/cuke-results.json" --test-run-id=$(test_run_id)
+  displayName: 'Push the test results file to CucumberSudio test run'
