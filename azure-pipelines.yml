@@ -13,6 +13,9 @@ variables:
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
+  project_token: 453614657963279096718948751067446984863199996149362031745
+  test_run_id: 434049
+  
 
 steps:
 - task: NuGetToolInstaller@1
