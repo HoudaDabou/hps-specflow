@@ -39,15 +39,19 @@ steps:
 - task: UseRubyVersion@0
   inputs:
     versionSpec: '2.5.8'
+
+- task: MSBuild@1
+  inputs:
+    msbuildVersion: '16.0'
     
 - script: gem install hiptest-publisher
   displayName: install hiptest-publisher
 - script: hiptest-publisher -c specflow.conf --token=$(project_token) --test-run-id=$(test_run_id) --only=features
   displayName: 'Regenerate features and fetch UIDs in each scenario included in the test run'
 - script: |
-    vsbuild /t:BuildNUnitFiles
-    vsbuild
-    vsbuild /t:Test
+    msbuild /t:BuildNUnitFiles
+    msbuild
+    msbuild /t:Test
   displayName: 'Run tests'
-- script: hiptest-publisher -c specflow.conf --token=$(project_token) -p "$(Pipeline.Workspace)/target/cuke-results.json" --test-run-id=$(test_run_id)
+- script: hiptest-publisher -c specflow.conf --token=$(project_token) --push="$(Pipeline.Workspace)/TestResult.xml" --test-run-id=$(test_run_id)
   displayName: 'Push the test results file to CucumberSudio test run'
