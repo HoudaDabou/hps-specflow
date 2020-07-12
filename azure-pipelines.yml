@@ -32,12 +32,8 @@ steps:
   inputs:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
-
-- script: |
-   echo "#! /bin/bash" > $(Pipeline.Workspace)/hiptest-publisher.exe
-   echo "docker run --rm --volume=\"$(pwd):/app\" hiptest/hiptest-publisher  \"\$@\"" >> $(Pipeline.Workspace)/hiptest-publisher.exe
-  displayName: 'install hiptest-publisher though its docker image'
-- script: $(Pipeline.Workspace)/hiptest-publisher.exe -c specflow.conf --token=$(project_token) --test-run-id=$(test_run_id) --only=features
+    
+- script: docker run --rm --volume=\"$(pwd):/app\" hiptest/hiptest-publisher -c specflow.conf --token=$(project_token) --test-run-id=$(test_run_id) --only=features
   displayName: 'Regenerate features and fetch UIDs in each scenario included in the test run'
 - script: |
     msbuild /t:BuildNUnitFiles
