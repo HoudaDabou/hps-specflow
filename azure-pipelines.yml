@@ -6,8 +6,18 @@
 trigger:
 - master
 
+strategy:
+  matrix:
+    linux:
+      imageName: 'ubuntu-16.04'
+    windows:
+      imageName: 'windows-latest'
+
 pool:
-  vmImage: 'windows-latest'
+  vmImage: $(imageName)
+
+# pool:
+ # vmImage: 'windows-latest'
 
 variables:
   solution: '**/*.sln'
@@ -33,7 +43,12 @@ steps:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
     
-- script: docker run --rm --volume=\"$(pwd):/app\" hiptest/hiptest-publisher -c specflow.conf --token=$(project_token) --test-run-id=$(test_run_id) --only=features
+- script: |
+   echo "#! /bin/bash" > $(Pipeline.Workspace)/hiptest-publisher
+   echo "docker run --rm --volume=\"$(pwd):/app\" hiptest/hiptest-publisher  \"\$@\"" >> $(Pipeline.Workspace)/hiptest-publisher
+   sudo chmod +x $(Pipeline.Workspace)/hiptest-publisher	
+  displayName: 'install hiptest-publisher though its docker image as en excutable script'
+- script: $(Pipeline.Workspace)/hiptest-publisher -c specflow.conf --token=$(project_token) --test-run-id=$(test_run_id) --only=features
   displayName: 'Regenerate features and fetch UIDs in each scenario included in the test run'
 - script: |
     msbuild /t:BuildNUnitFiles
