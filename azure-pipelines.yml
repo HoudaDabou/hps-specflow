@@ -34,11 +34,11 @@ steps:
     configuration: '$(buildConfiguration)'
 
 - script: |
-   echo "#! /bin/bash" > $(Pipeline.Workspace)/hiptest-publisher
-   echo "docker run --rm --volume=\"$(pwd):/app\" hiptest/hiptest-publisher  \"\$@\"" >> $(Pipeline.Workspace)/hiptest-publisher
-   sudo chmod +x $(Pipeline.Workspace)/hiptest-publisher
+   echo "#! /bin/bash" > $(Pipeline.Workspace)/hiptest-publisher.exe
+   echo "docker run --rm --volume=\"$(pwd):/app\" hiptest/hiptest-publisher  \"\$@\"" >> $(Pipeline.Workspace)/hiptest-publisher.exe
+   # sudo chmod +x $(Pipeline.Workspace)/hiptest-publisher
   displayName: 'install hiptest-publisher though its docker image'
-- script: $(Pipeline.Workspace)/hiptest-publisher -c specflow.conf --token=$(project_token) --test-run-id=$(test_run_id) --only=features
+- script: $(Pipeline.Workspace)/hiptest-publisher.exe -c specflow.conf --token=$(project_token) --test-run-id=$(test_run_id) --only=features
   displayName: 'Regenerate features and fetch UIDs in each scenario included in the test run'
 - script: |
     msbuild /t:BuildNUnitFiles
